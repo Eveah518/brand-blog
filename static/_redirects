@@ -1,0 +1,2 @@
+# 如需把 www 跳转到主域名，取消下面一行注释并把域名改成你自己的
+# http://www.your-domain.com/* https://your-domain.com/:splat 301
