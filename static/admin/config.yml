@@ -1,0 +1,36 @@
+# Decap CMS 配置（原 Netlify CMS）
+# 后台地址：https://brand-blog.pages.dev/admin/
+#
+# 注意：repo 下面的 YOUR_GITHUB_USERNAME 需替换成你真实的 GitHub 用户名
+#（仓库名保持 brand-blog）。改完记得重新部署。
+
+backend:
+  name: github
+  repo: Eveah518/brand-blog
+  branch: main
+  base_url: https://brand-blog.pages.dev
+  auth_endpoint: api/oauth
+  scope: repo
+
+media_folder: "static/images/uploads"   # 图片存进仓库，便于版本管理
+public_folder: "/images/uploads"
+
+collections:
+  - name: "posts"
+    label: "文章"
+    folder: "content/posts"
+    create: true
+    slug: "{{slug}}"
+    path: "{{slug}}.md"
+    summary: "{{title}}"
+    fields:
+      - { name: title, label: "标题", widget: string }
+      - { name: date, label: "发布日期", widget: datetime }
+      - { name: lastmod, label: "更新日期", widget: datetime, required: false }
+      - { name: draft, label: "草稿（不发布）", widget: boolean, default: false }
+      - { name: description, label: "摘要", widget: text, required: false }
+      - { name: categories, label: "分类", widget: list, required: false }
+      - { name: tags, label: "标签", widget: list, required: false }
+      - { name: cover, label: "封面图", widget: image, required: false }
+      - { name: toc, label: "显示目录", widget: boolean, default: true, required: false }
+      - { name: body, label: "正文", widget: markdown }
