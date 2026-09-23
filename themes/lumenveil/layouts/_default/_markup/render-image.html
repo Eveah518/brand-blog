@@ -1,0 +1,94 @@
+{{/*
+  render-image.html — Smart image rendering for Lumenveil
+
+  Resolves the image destination in this order:
+    1. Page bundle resource (.Page.Resources.GetMatch)
+       — colocated images in the page bundle folder, returns .RelPermalink
+    2. External URL (http://, https://, //)
+       — passed through unchanged
+    3. Absolute path (/images/foo.jpg)
+       — passed through unchanged
+    4. Relative path (images/foo.jpg)
+       — auto-prefixed with "/" so it resolves from the site root,
+         matching Hugo's static/ directory convention
+
+  Without step 4, writing `![alt](images/foo.jpg)` on a page at
+  `/posts/foo/` produces `<img src="images/foo.jpg">`, which the browser
+  resolves to `/posts/foo/images/foo.jpg` and 404s.
+
+  Always wraps output in a PhotoSwipe <figure> for lightbox behavior.
+  When the destination resolves to a page-bundle resource with known
+  dimensions, the <figure> also carries `data-flex-grow` / `data-flex-basis`
+  (and matching CSS variables) so the gallery auto-grouping JS in main.js
+  can wrap consecutive images into a justified-row masonry container.
+  Calculation:
+    flex-grow  = width  * 100 / height
+    flex-basis = width  * 240 / height   (row target height in px)
+
+  ------------------------------------------------------------------------
+  Caption feature (v0.1.9+)
+
+  Use `.Title` (standard markdown title syntax) for caption:
+    ![alt](src "Some caption text")
+
+  When `.Title` is set, the text renders as a centered <figcaption>
+  below the figure. When `.Title` is empty, no <figcaption> is emitted
+  (empty case) — clean figure, no extra margin/padding from a phantom
+  element. The `.pswp-figure > figcaption` CSS already has
+  `text-align: center`, so captions render centered out of the box.
+
+  Backward compat: existing articles without title syntax render
+  unchanged (no figcaption). No current article on the blog uses
+  `.Title`, so no migration needed.
+
+  Forward compat: new articles add captions via standard markdown
+  title syntax:
+    ![alt](src "caption text")
+  Works with any Hugo + Goldmark version — no special extensions
+  required.
+
+  Note: `.Title` is now caption ONLY. It no longer adds an HTML
+  `title` attribute (tooltip) to the <img>. Previously the title
+  syntax produced both a caption below AND a tooltip on hover, which
+  was a bug (conflated two semantics). No current article on the blog
+  relied on the tooltip side effect.
+*/}}
+{{- $dest := .Destination -}}
+{{- $img := "" -}}
+{{- $src := $dest -}}
+{{- with .Page.Resources -}}
+  {{- $img = .GetMatch (printf "%s" $dest) -}}
+{{- end -}}
+{{- if $img -}}
+  {{- $src = $img.RelPermalink -}}
+{{- else -}}
+  {{- $isExternal := or (hasPrefix $dest "http://") (hasPrefix $dest "https://") (hasPrefix $dest "//") -}}
+  {{- if and (not $isExternal) (not (hasPrefix $dest "/")) -}}
+    {{- $src = printf "/%s" $dest -}}
+  {{- end -}}
+{{- end -}}
+{{- $hasDims := false -}}
+{{- if $img -}}
+  {{- if and $img.Width $img.Height -}}
+    {{- $hasDims = true -}}
+  {{- end -}}
+{{- end -}}
+{{- $flexGrow := "" -}}
+{{- $flexBasis := "" -}}
+{{- if $hasDims -}}
+  {{- $flexGrow = (div (mul $img.Width 100) $img.Height) -}}
+  {{- $flexBasis = (div (mul $img.Width 240) $img.Height) -}}
+{{- end -}}
+<figure class="pswp-figure gallery-image"{{ if $flexGrow }} data-flex-grow="{{ $flexGrow }}" data-flex-basis="{{ $flexBasis }}px" style="--pswp-grow: {{ $flexGrow }}; --pswp-basis: {{ $flexBasis }}px"{{ end }}>
+  <a href="{{ $src | safeURL }}"
+     class="pswp-inline"
+     data-pswp-src="{{ $src | safeURL }}"
+     data-pswp-width="{{ with $img }}{{ .Width }}{{ else }}1600{{ end }}"
+     data-pswp-height="{{ with $img }}{{ .Height }}{{ else }}1067{{ end }}">
+    <img src="{{ $src | safeURL }}"
+         alt="{{ .Text }}"
+         loading="lazy"
+         decoding="async">
+  </a>
+  {{- with .Title }}<figcaption>{{ . }}</figcaption>{{- end -}}
+</figure>
