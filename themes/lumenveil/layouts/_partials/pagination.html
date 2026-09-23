@@ -1,0 +1,15 @@
+{{ $paginator := . }}
+{{ $year := "" }}
+{{ if reflect.IsMap . }}
+  {{ with index . "Paginator" }}{{ $paginator = . }}{{ end }}
+  {{ with index . "Year" }}{{ $year = . }}{{ end }}
+{{ end }}
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination" aria-label="分页">
+  {{ with $paginator.Prev }}<a href="{{ if $year }}{{ printf "%s?year=%s&page=%d" (urls.Parse .URL).Path $year .PageNumber }}{{ else }}{{ replaceRE `\?.*$` (printf "?page=%d" .PageNumber) .URL }}{{ end }}" rel="prev" class="pagination-item">← 上一页</a>{{ else }}<span class="pagination-item is-disabled" aria-disabled="true">← 上一页</span>{{ end }}
+  <span class="pagination-pages">
+    {{ range $paginator.Pagers }}<a href="{{ if $year }}{{ printf "%s?year=%s&page=%d" (urls.Parse .URL).Path $year .PageNumber }}{{ else }}{{ replaceRE `\?.*$` (printf "?page=%d" .PageNumber) .URL }}{{ end }}" class="pagination-item{{ if eq .PageNumber $paginator.PageNumber }} is-active{{ end }}"{{ if eq .PageNumber $paginator.PageNumber }} aria-current="page"{{ end }}>{{ .PageNumber }}</a>{{ end }}
+  </span>
+  {{ with $paginator.Next }}<a href="{{ if $year }}{{ printf "%s?year=%s&page=%d" (urls.Parse .URL).Path $year .PageNumber }}{{ else }}{{ replaceRE `\?.*$` (printf "?page=%d" .PageNumber) .URL }}{{ end }}" rel="next" class="pagination-item">下一页 →</a>{{ else }}<span class="pagination-item is-disabled" aria-disabled="true">下一页 →</span>{{ end }}
+</nav>
+{{ end }}
