@@ -1,0 +1,78 @@
+baseURL = 'https://your-domain.pages.dev/'   # ← 改成你的域名
+title = 'Brand 博客'
+theme = 'lumenveil'
+
+# 搜索 + 分类页所需输出格式（务必保留，否则站内搜索失效）
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
+  section = ['HTML', 'RSS']
+  taxonomy = ['HTML', 'RSS']
+  term = ['HTML', 'RSS']
+
+[outputFormats.JSON]
+  mediaType = 'application/json'
+  baseName = 'index'
+  isPlainText = true
+  notAlternative = true
+
+[pagination]
+  pagerSize = 7
+
+[taxonomies]
+  category = 'categories'
+  tag = 'tags'
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+    guessSyntax = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+    ordered = false
+
+[params]
+  description = 'Brand 博客 —— 玻璃拟态风格的个人品牌站点。'
+  author = '你的名字'
+  initial = 'B'
+  avatar = '/images/avatar.svg'
+  role = 'Writer · Creator'
+  tagline = '记录与表达。'
+  location = '你的城市'
+  status = '正在创作'
+  email = 'you@example.com'
+  github = 'https://github.com/yourname'
+  twitter = 'https://twitter.com/yourname'
+  since = 2024
+  copyright = 'CC BY-NC-SA 4.0'
+  copyright_url = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  mainSections = ['posts']
+  highlight = 'hljs'
+
+[menus]
+  [[menus.main]]
+    name = '首页'
+    pageRef = '/'
+    weight = 10
+  [[menus.main]]
+    name = '文章'
+    pageRef = '/posts'
+    weight = 20
+  [[menus.main]]
+    name = '关于'
+    pageRef = '/about'
+    weight = 25
+  [[menus.main]]
+    name = '分类'
+    pageRef = '/categories'
+    weight = 30
+  [[menus.main]]
+    name = '标签'
+    pageRef = '/tags'
+    weight = 40
+
+[permalinks]
+  posts = '/posts/:slug/'
+
+[imaging]
+  quality = 85
