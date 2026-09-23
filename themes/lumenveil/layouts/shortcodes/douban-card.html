@@ -1,0 +1,78 @@
+{{- /*
+  douban-card shortcode (added 2026-08-18 by Hansen, updated 2026-08-18 for type variants + style dedup)
+  CSS moved to assets/css/main.css (BEM-named component section).
+
+  Usage:
+    {{< douban-card type="movie" id="36154853" title="好东西" year="2024"
+                       director="邵艺辉" rating="9.0" cover="2.jpg" >}}
+    {{< douban-card type="book"  id="..." title="..." year="..."
+                       director="余华" rating="9.0" cover="book.jpg" >}}
+    {{< douban-card type="music" id="..." title="..." year="..."
+                       director="万能青年旅店" rating="9.0" cover="album.jpg" >}}
+
+  Renders a clickable card linking to a Douban subject page.
+  Douban closed its public API in 2022, so metadata must be passed as
+  parameters. `cover` is optional — falls back to a type-specific icon.
+
+  Required: id
+  Optional: type (default "movie"), title, year, region, director, rating, cast, cover, synopsis
+
+  Type values:
+    - movie: links to movie.douban.com,  导演 / 主演 labels, 摄像机+播放三角 icon
+    - book:  links to book.douban.com,   作者 / 译者 labels, book icon
+    - music: links to music.douban.com,  艺术家 / 专辑 labels, music icon
+*/ -}}
+
+{{- $id := .Get "id" -}}
+{{- $type := .Get "type" | default "movie" -}}
+{{- $title := .Get "title" | default "豆瓣条目" -}}
+{{- $year := .Get "year" -}}
+{{- $region := .Get "region" -}}
+{{- $director := .Get "director" -}}
+{{- $rating := .Get "rating" -}}
+{{- $cast := .Get "cast" -}}
+{{- $synopsis := .Get "synopsis" -}}
+{{- $cover := .Get "cover" -}}
+
+{{- /* type-specific config: URL prefix, SVG icon path, role labels, aria label */ -}}
+{{- $url := printf "https://%s.douban.com/subject/%s/" $type $id -}}
+{{- $iconPath := "M3 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zm13 1l5-3v11l-5-3V8z" -}}
+{{- $role1Label := "导演" -}}
+{{- $role2Label := "主演" -}}
+{{- $ariaIcon := "电影" -}}
+{{- if eq $type "book" -}}
+  {{- $iconPath = "M3 5a2 2 0 0 1 2-2h5v16H5a2 2 0 0 1-2-2V5zm9-2h7a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7V3z" -}}
+  {{- $role1Label = "作者" -}}
+  {{- $role2Label = "译者" -}}
+  {{- $ariaIcon = "书籍" -}}
+{{- else if eq $type "music" -}}
+  {{- $iconPath = "M9 17V5l11-2v12M9 17a2 2 0 1 1-2-2 2 2 0 0 1 2 2zM20 15a2 2 0 1 1-2-2 2 2 0 0 1 2 2z" -}}
+  {{- $role1Label = "艺术家" -}}
+  {{- $role2Label = "专辑" -}}
+  {{- $ariaIcon = "音乐" -}}
+{{- end -}}
+
+<a class="douban-card" href="{{ $url }}" target="_blank" rel="noopener noreferrer" aria-label="豆瓣：{{ $title }}">
+  {{- if $cover }}
+  <img class="douban-card__cover" src="{{ $cover | relURL }}" alt="{{ $title }} 封面" loading="lazy" decoding="async" />
+  {{- else }}
+  <div class="douban-card__icon" aria-label="{{ $ariaIcon }}"><svg viewBox="0 0 24 24" fill-rule="evenodd" aria-hidden="true"><path d="{{ $iconPath }}"/></svg></div>
+  {{- end }}
+  <div class="douban-card__body">
+    <div class="douban-card__title">
+      <span>{{ $title }}</span>
+    </div>
+    {{- if $synopsis }}<div class="douban-card__synopsis">{{ $synopsis }}</div>{{ end }}
+    {{- if or $year $region $director $rating $cast }}
+    <div class="douban-card__meta">
+      {{- if $year }}<span>{{ $year }}</span>{{ end }}
+      {{- if $region }}<span>{{ $region }}</span>{{ end }}
+      {{- if $director }}<span>{{ $role1Label }} · {{ $director }}</span>{{ end }}
+      {{- if $rating }}<span class="douban-card__rating">★ {{ $rating }}</span>{{ end }}
+      {{- if $cast }}<span>{{ $role2Label }} · {{ $cast }}</span>{{ end }}
+    </div>
+    {{- end }}
+  </div>
+  <span class="douban-card__source">豆瓣</span>
+  <div class="douban-card__arrow" aria-hidden="true">→</div>
+</a>
