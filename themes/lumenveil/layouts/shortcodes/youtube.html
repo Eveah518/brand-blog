@@ -1,0 +1,57 @@
+{{/*
+  Shortcode: youtube
+  Usage:    {{< youtube dQw4w9WgXcQ >}}
+            {{< youtube dQw4w9WgXcQ 42 >}}                       (start at 42s)
+            {{< youtube "https://youtu.be/dQw4w9WgXcQ" >}}        (URL auto-extract)
+            {{< youtube "https://youtu.be/dQw4w9WgXcQ?t=42" 42 "autoplay=1" >}}
+
+  Embeds a YouTube video using its video ID (the "short ID").
+  Tracking params (si, feature, pp, ...) are intentionally stripped — only
+  the short ID is forwarded to the player, so future YT IDs work without
+  code changes. A full URL is also accepted; the ID is extracted via regex.
+
+  Length: YouTube IDs are 11 chars since ~2010, but historical posts may
+  still use 10-char IDs (e.g. e1J84WMI6k). We accept 10-12 to stay
+  backward-compatible with legacy posts.
+
+  Uses youtube-nocookie.com (privacy-enhanced): no cookies set until the
+  user actually hits play. rel=0 hides unrelated recommendations after end.
+*/}}
+{{- $input := .Get 0 | default "" -}}
+{{- if not $input -}}
+  {{- errorf "youtube shortcode: missing video ID or URL (usage: {{< youtube dQw4w9WgXcQ >}})" -}}
+{{- end -}}
+
+{{- $id := "" -}}
+{{- if (findRE "^[A-Za-z0-9_-]{10,12}$" $input) -}}
+  {{- /* Already a bare 10-12 char ID — most common case */ -}}
+  {{- $id = $input -}}
+{{- else -}}
+  {{- /* Try to extract from common YT URL shapes:
+         watch?v=, /shorts/, /embed/, youtu.be/, /v/ */ -}}
+  {{- $urlMatches := findRE `(?:v=|/shorts/|/embed/|youtu\.be/|/v/)([A-Za-z0-9_-]{10,12})` $input -}}
+  {{- if $urlMatches -}}
+    {{- $idMatches := findRE `[A-Za-z0-9_-]{10,12}` (index $urlMatches 0) -}}
+    {{- if $idMatches -}}
+      {{- $id = index $idMatches 0 -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if not $id -}}
+  {{- errorf "youtube shortcode: could not extract video ID from %q" $input -}}
+{{- end -}}
+
+{{- $start := .Get 1 | default "0" -}}
+{{- $auto  := default "0" ($.Get "autoplay") -}}
+
+<div class="embed-frame">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/{{ $id }}?start={{ $start }}&autoplay={{ $auto }}&rel=0"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+    title="YouTube {{ $id }}">
+  </iframe>
+</div>
