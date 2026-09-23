@@ -1,0 +1,125 @@
+/* Breakpoint scale: 480 (sm) / 760 (md) / 980 (lg) */
+@media (max-width: 980px) {
+  .header-inner { grid-template-columns: 1fr auto; }
+  .main-nav { position: absolute; top: calc(100% + 4px); left: 22px; right: 22px; display: grid; visibility: hidden; padding: 10px; border-radius: 18px; background: rgba(15,18,26,.96); opacity: 0; transform: translateY(-8px); transition: opacity .2s ease,transform .2s ease,visibility .2s; -webkit-backdrop-filter: blur(24px); }
+  .main-nav.is-open { visibility: visible; opacity: 1; transform: none; }
+  .main-nav a { padding: 11px 13px; border-radius: 10px; }
+  .menu-toggle { display: block; }
+  .article-layout { grid-template-columns: minmax(0,820px); }
+  .toc { position: static; grid-row: 1; }
+  .toc__inner { padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255,255,255,.025); }
+}
+
+@media (max-width: 760px) {
+  .site-header { padding: 12px 16px; }
+  .site-header.is-scrolled { padding: 9px 16px; }
+  .main-nav { left: 16px; right: 16px; }
+  .header-actions > a.icon-button { display: none; }
+  /* Hero on mobile: drop min-height:100dvh + place-items:center so the first
+     screen fits without a ~160px empty band above the avatar, and tighten
+     padding so the second CTA (“搜索文章”) stays inside the viewport. */
+  .hero {
+    min-height: auto;
+    /* v10: padding-top 120 → 144. v9's 50px header→avatar gap still
+       felt tight; pushing to 144 gives ~82px breathing room. Hero grows
+       to ~676px — still well inside the 915px viewport, and the CTA→pill
+       22px gap is preserved (content shifts by the same delta as pill). */
+    padding: 144px 18px 80px;
+    place-items: start center;
+  }
+  /* Scroll hint: restore on mobile and seat it close to the hero's bottom
+     edge so it's clearly separated from the second CTA. With the inline-flex
+     → flex blockification this pill ends up box-sizing: content-box too,
+     so its rendered height is 38(content) + 6(padding-top) + 2(border) = 46px,
+     not 38. Override the default `bottom: 28px` to 8px, and with padding-bottom
+     80px that puts the pill at y≈542–588 — a clean 22px gap below the
+     second CTA (which ends at y≈520). */
+  /* Override only `bottom` (default 28px → 8px). Do NOT touch `display` —
+     the original .hero__scroll { display: grid } from home.css is what
+     blockifies the inner <span> so its width:2px/height:8px rule applies.
+     v6 accidentally wrote `display: block` here, which demoted the span
+     back to inline and collapsed the bouncing line to 0×0. */
+  .hero__scroll {
+    bottom: 8px;
+  }
+  .hero__avatar { width: 84px; height: 84px; margin-bottom: 22px; }
+  .hero__title { font-size: clamp(40px,11vw,60px); }
+  .hero__role { margin-top: 22px; }
+  .hero__tagline {
+    /* Tagline text "Be yourself; ... - Oscar Wilde" measures ~420px at 15px,
+       which overflows the 380px inner box. body has overflow-x:hidden, so
+       the centered text gets its first and last characters clipped.
+       text-wrap:balance wraps onto a second line; width:100% + max-width:100%
+       (CodeRabbit finding) caps the box to the inner so a longer params.tagline
+       on 320/360px viewports won't overflow horizontally. */
+    font-size: 13px;
+    text-wrap: balance;
+    width: 100%;
+    max-width: 100%;
+  }
+  .hero__cta { margin-top: 26px; gap: 10px; }
+  .section, .page-hero, .article, .site-footer { width: min(calc(100% - 32px),var(--content)); }
+  .section-head { grid-template-columns: 1fr; gap: 9px; margin-bottom: 28px; }
+  .section-rule { display: none; }
+  .post-grid { grid-template-columns: 1fr; }
+  .post-card, .post-card:first-child { grid-column: auto; grid-template-columns: 1fr; min-height: 0; }
+  .post-card__visual { aspect-ratio: 16/8; }
+  .post-card:first-child h2 { font-size: 24px; }
+  .post-card__body > p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .explore-grid { grid-template-columns: 1fr; gap: 14px; }
+  .explore-panel { min-height: 0; padding: 22px 20px; }
+  .explore-panel > strong { font-size: 46px; margin: 14px 0 4px; letter-spacing: -.04em; }
+  .explore-panel h3 { font-size: 20px; margin: 0 0 10px; }
+  .explore-panel p { font-size: 13px; line-height: 1.65; margin: 0 0 18px; }
+  .about-panel { grid-column: auto; grid-template-columns: 1fr; }
+  .about-panel .eyebrow { grid-column: auto; }
+  .term-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .page-hero { padding-top: 130px; }
+  .page-hero h1 { font-size: clamp(44px,14vw,70px); }
+  .article { padding-top: 126px; }
+  .article-main { padding: 28px 20px; border-radius: var(--radius-lg); }
+  .article-header h1 { font-size: clamp(39px,12vw,62px); }
+  .post-nav { grid-template-columns: 1fr; }
+  .article-share { flex-wrap: wrap; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .brand--text .brand__text { display: inline; }
+  /* .hero__chips .chip:last-child { display: none; } -- removed: was hiding the "Since YYYY" chip on mobile */
+  .hero__cta { width: 100%; flex-direction: column; }
+  .hero__cta .button { width: 100%; }
+  .hero { padding: 136px 16px 76px; }
+  .hero__avatar { width: 76px; height: 76px; margin-bottom: 18px; }
+  .hero__title { font-size: clamp(36px,10vw,52px); }
+  .hero__tagline { font-size: 12px; }
+  .hero__cta .button {
+    /* Inline-flex → flex blockified the primary CTA but its computed
+       box-sizing ends up content-box on mobile despite the universal
+       `*, *::before, *::after { box-sizing: border-box }` reset. With
+       content-box, width:100% (=380) + 36px padding + 2px border = 418px,
+       overflowing the inner box by 38px on the right and getting clipped
+       by body's overflow-x:hidden — which is also why the centered
+       tagline's leading "B" was being chopped off. Force border-box and
+       cap to parent width. */
+    box-sizing: border-box;
+    max-width: 100%;
+    min-height: 40px;
+    padding: 9px 18px;
+    font-size: 13px;
+  }
+  .post-card__body { padding: 14px 16px; }
+  .post-card__visual { aspect-ratio: 16/7; }
+  .post-card h2 { margin: 10px 0 6px; font-size: 18px; line-height: 1.3; }
+  .post-card__body > p { margin: 0; font-size: 13px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .post-card__foot { padding-top: 10px; gap: 8px; }
+  .post-card__foot .tag-list { display: none; }
+  .post-card__foot { align-items: flex-start; flex-direction: column; }
+  .term-grid { grid-template-columns: 1fr; }
+  .pagination { grid-template-columns: 1fr 1fr; border-radius: 18px; }
+  .pagination > span:nth-child(2) { grid-column: 1/-1; grid-row: 1; }
+  .not-found > div { width: 100%; flex-direction: column; }
+  .not-found__cta { flex-direction: column; }
+  .not-found__cta .button { width: 100%; min-width: 0; }
+}
