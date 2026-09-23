@@ -1,0 +1,26 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <a class="brand brand--footer" href="{{ site.Home.RelPermalink }}"><span class="brand__mark">{{ site.Params.initial | default "L" }}</span><span class="brand__text">{{ site.Params.author | default site.Title }}<span>.</span></span></a>
+      <p>{{ site.Params.tagline }}</p>
+    </div>
+    <div class="footer-links">
+      {{ with site.Params.github }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">GitHub</a>{{ end }}
+      {{ with site.Params.twitter }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">Twitter</a>{{ end }}
+      {{ with site.Params.email }}<a href="mailto:{{ . }}">Email</a>{{ end }}
+      {{ with site.Home.OutputFormats.Get "RSS" }}<a href="{{ .RelPermalink }}">RSS</a>{{ end }}
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© {{ if site.Params.since }}{{ site.Params.since }} – {{ end }}{{ now.Year }} {{ site.Params.author }}</span>
+    <span>由 Hugo 驱动 · <a href="https://github.com/Hansen1018/hugo-theme-lumenveil" target="_blank" rel="noopener noreferrer">Theme Lumenveil designed by Hansen</a></span>
+    <a href="{{ site.Params.copyright_url | default "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" }}" target="_blank" rel="noopener noreferrer">Licensed under {{ site.Params.copyright | default "CC BY-NC-SA 4.0" }}</a>
+  </div>
+</footer>
+
+<button class="back-to-top" type="button" data-back-to-top aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+
+<div class="scroll-progress" data-scroll-progress aria-hidden="true"><span class="scroll-progress__bar"></span></div>
